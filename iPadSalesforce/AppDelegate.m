@@ -24,12 +24,33 @@
     // Override point for customization after application launch.
     
     
+    
+    [self synchronousLoginTest ];
+
+    
+    
+    return YES;
+}
+
+
+-(void)synchronousLoginTest{
+    @try {
+        
+        // This will CRASH!!
+        client = [[ZKSforceClient alloc] init] ;
+        [client login:@"youremail@email.com" password:@"incorrectUsernameSecurityToken"];
+        
+        
+    } @catch (ZKSoapException *ex) {
+        NSLog(@"login failed %@", [ex reason]);
+        // show to user etc, whatever you want to do when login fails.
+    }
+}
+
+-(void)asyncLoginTest{
     @try {
         [SFVAsync performSFVAsyncRequest:(id) ^ {
-            
-            
-            
-             client = [[ZKSforceClient alloc] init] ;
+            client = [[ZKSforceClient alloc] init] ;
             @try {
                 
                 // THIS WORKS
@@ -39,17 +60,18 @@
                 
                 // This will CRASH!!
                 [client login:@"youremail@email.com" password:@"incorrectUsernameSecurityToken"];
-            
-
+                
+                
             } @catch (ZKSoapException *ex) {
                 NSLog(@"login failed %@", [ex reason]);
                 // show to user etc, whatever you want to do when login fails.
             }
-
+            
+            
             
         } failBlock: ^(NSException *e) {
             NSLog(@"e:%@", e);
-
+            
         } completeBlock: ^(id result) {
             NSLog(@"results:%@", result);
         }];
@@ -61,10 +83,7 @@
     @finally
     {
     }
-    
-    return YES;
 }
-
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
